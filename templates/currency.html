@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<br>
+<form method="post" class="row justify-content-center">
+    <div class="form-group col-3">
+        <input type="date" name="date1" max="2019-07-16" min="2015-01-01" value="2019-07-16" class="form-control">
+    </div>
+    <div class="form-group col-3">
+        <input type="date" name="date2" max="2019-07-16" min="2015-01-01"  value="2019-07-16" class="form-control">
+    </div>
+    <div class="col-2">
+        <button type="submit" class="btn btn-secondary">Compare</button>
+    </div>
+</form>
+
+<br>
+<table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Valyuta</th>
+        <th>Kod</th>
+        <th>Kurs</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for valute in view_list %}
+        <tr>
+            <td>{{valute['valyuta']}}</td>
+            <td>{{valute['kod']}}</td>
+            <td>{{valute['kurs']}}</td>
+            <td>
+            {% if valute['ferq'] == 2 %}
+                <i class="fas fa-arrow-up"></i>
+            {% elif valute['ferq'] == 1 %}
+                <i class="fas fa-arrow-down"></i>
+            {% else %}
+                <i class="far fa-dot-circle"></i>
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br><br><br>
+{% endblock body %}

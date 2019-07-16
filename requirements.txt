@@ -1,0 +1,13 @@
+certifi==2019.6.16
+chardet==3.0.4
+Click==7.0
+Flask==1.1.1
+idna==2.5
+itsdangerous==1.1.0
+Jinja2==2.10.1
+MarkupSafe==1.1.1
+python-memcached==1.59
+requests2==2.16.0
+six==1.12.0
+urllib3==1.21.1
+Werkzeug==0.15.4
