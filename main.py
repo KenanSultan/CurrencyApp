@@ -24,7 +24,7 @@ def index():
 
 @app.route('/currency', methods = ['GET', 'POST'])
 def currency():
-
+    today = date.today().strftime("%Y-%m-%d")
     if request.method == 'POST':
         date1 = ".".join(request.form.get('date1').split('-')[::-1])
         date2 = ".".join(request.form.get('date2').split('-')[::-1])
@@ -32,8 +32,6 @@ def currency():
         view_list = list()
         date1_list = myFunctions.listFromCbar(date1)
         date2_list = myFunctions.listFromCbar(date2)
-
-        CurrencyForm.query.delete()
 
         for index, value in enumerate(date2_list):
             valyuta = value[1].text,
@@ -47,6 +45,9 @@ def currency():
             else:
                 ferq = 0
 
+            old_currency_details = CurrencyForm.query.filter_by(kod = kod).first()
+            if old_currency_details:
+                 db.session.delete(old_currency_details)
             currency_details = CurrencyForm(valyuta = valyuta, kod = kod, kurs = kurs, ferq = ferq)
             db.session.add(currency_details)
             db.session.commit()
@@ -58,17 +59,17 @@ def currency():
                 'ferq' : ferq
             })
 
-        return render_template('currency.html', view_list = view_list)
+        return render_template('currency.html', content = {'view_list': view_list, 'today': today})
 
     elif request.method == 'GET':
 
         view_list = CurrencyForm.query.all()
 
-        if len(view_list) != 0:
-            return render_template('currency.html', view_list = view_list)
+        if len(view_list):
+            return render_template('currency.html', content = {'view_list': view_list, 'today': today})
         else:
-            today = date.today().strftime("%d.%m.%Y")
-            content = myFunctions.listFromCbar(today)
+            todayForCbar = date.today().strftime("%d.%m.%Y")
+            content = myFunctions.listFromCbar(todayForCbar)
 
             view_list = [{
                 'valyuta': val[1].text,
@@ -77,7 +78,7 @@ def currency():
                 'ferq': 0
             } for val in content]
 
-        return render_template('currency.html', view_list = view_list)
+        return render_template('currency.html', content = {'view_list': view_list, 'today': today})
         
 
 if __name__ == "__main__":
