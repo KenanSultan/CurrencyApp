@@ -7,4 +7,4 @@
     3. Install packages
         pip3 install -r requirements.txt
     4. Run the project
-        python currency.py
+        python main.py
