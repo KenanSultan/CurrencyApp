@@ -5,10 +5,10 @@
 <br>
 <form method="post" class="row justify-content-center">
     <div class="form-group col-3">
-        <input type="date" name="date1" max={{ content['today'] }} min="2015-01-01" value={{ content['today'] }} class="form-control">
+        <input type="date" name="date1" max="{{ content['today'] }}" min="2015-01-01" value="{{ content['first_date'] }}" class="form-control">
     </div>
     <div class="form-group col-3">
-        <input type="date" name="date2" max={{ content['today'] }} min="2015-01-01"  value={{ content['today'] }} class="form-control">
+        <input type="date" name="date2" max="{{ content['today'] }}" min="2015-01-01"  value="{{ content['second_date'] }}" class="form-control">
     </div>
     <div class="col-2">
         <button type="submit" class="btn btn-secondary">Compare</button>
@@ -31,15 +31,7 @@
             <td>{{valute['valyuta']}}</td>
             <td>{{valute['kod']}}</td>
             <td>{{valute['kurs']}}</td>
-            <td>
-            {% if valute['ferq'] == 2 %}
-                <i class="fas fa-arrow-up"></i>
-            {% elif valute['ferq'] == 1 %}
-                <i class="fas fa-arrow-down"></i>
-            {% else %}
-                <i class="far fa-dot-circle"></i>
-            {% endif %}
-            </td>
+            <td><i class="fas fa-{{ valute['ferq'] }}"></i></td>
         </tr>
         {% endfor %}
     </tbody>

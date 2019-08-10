@@ -13,10 +13,16 @@ class CurrencyForm(db.Model):
     valyuta = db.Column(db.String(80))
     kod = db.Column(db.String(10))
     kurs = db.Column(db.Float)
-    ferq = db.Column(db.Integer)
+    ferq = db.Column(db.String(10))
 
     def __repr__(self):
         return '<Currency %r>' % self.valyuta
+
+class DateForm(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    first_date = db.Column(db.String(10))
+    second_date = db.Column(db.String(10))
+
 
 @app.route('/')
 def index():
@@ -26,24 +32,33 @@ def index():
 def currency():
     today = date.today().strftime("%Y-%m-%d")
     if request.method == 'POST':
-        date1 = ".".join(request.form.get('date1').split('-')[::-1])
-        date2 = ".".join(request.form.get('date2').split('-')[::-1])
+        first_date = request.form.get('date1')
+        second_date = request.form.get('date2')
 
-        view_list = list()
+        old_date_info = DateForm.query.first()
+        if old_date_info:
+            db.session.delete(old_date_info)
+        date_info = DateForm(first_date = first_date, second_date = second_date)
+        db.session.add(date_info)
+        db.session.commit()
+        
+        date1 = ".".join(first_date.split('-')[::-1])
+        date2 = ".".join(second_date.split('-')[::-1])
         date1_list = myFunctions.listFromCbar(date1)
         date2_list = myFunctions.listFromCbar(date2)
-
+        view_list = list()
+        
         for index, value in enumerate(date2_list):
-            valyuta = value[1].text,
-            kod = value.attrib['Code'],
-            kurs = value[2].text,
+            valyuta = value[1].text
+            kod = value.attrib['Code']
+            kurs = value[2].text
             deqiq_ferq = float(value[2].text) - float(date1_list[index][2].text)
             if deqiq_ferq > 0:
-                ferq = 2
+                ferq = 'arrow-up'
             elif deqiq_ferq < 0:
-                ferq = 1
+                ferq = 'arrow-down'
             else:
-                ferq = 0
+                ferq = 'dot-circle'
 
             old_currency_details = CurrencyForm.query.filter_by(kod = kod).first()
             if old_currency_details:
@@ -53,20 +68,21 @@ def currency():
             db.session.commit()
 
             view_list.append({
-                'valyuta' : valyuta[0],
-                'kod' : kod[0],
-                'kurs' : kurs[0],
+                'valyuta' : valyuta,
+                'kod' : kod,
+                'kurs' : kurs,
                 'ferq' : ferq
             })
 
-        return render_template('currency.html', content = {'view_list': view_list, 'today': today})
+        return render_template('currency.html', content = {'view_list': view_list, 'today': today, 'first_date': first_date, 'second_date': second_date})
 
     elif request.method == 'GET':
 
         view_list = CurrencyForm.query.all()
-
+        
         if len(view_list):
-            return render_template('currency.html', content = {'view_list': view_list, 'today': today})
+            date_info = DateForm.query.first()
+            return render_template('currency.html', content = {'view_list': view_list, 'today': today, 'first_date': date_info.first_date, 'second_date': date_info.second_date})
         else:
             todayForCbar = date.today().strftime("%d.%m.%Y")
             content = myFunctions.listFromCbar(todayForCbar)
@@ -78,7 +94,7 @@ def currency():
                 'ferq': 0
             } for val in content]
 
-        return render_template('currency.html', content = {'view_list': view_list, 'today': today})
+        return render_template('currency.html', content = {'view_list': view_list, 'today': today, 'first_date': today, 'second_date': today})
         
 
 if __name__ == "__main__":
